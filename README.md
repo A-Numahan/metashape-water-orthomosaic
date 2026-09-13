@@ -114,6 +114,6 @@ dataset and installed Metashape version.
 
 ## References
 
-- [Agisoft Metashape Professional User Manual](https://www.agisoft.com/pdf/metashape-pro_2_3_en.pdf)
+- [Agisoft Metashape User Manual (August 2024)](https://github.com/ThirawatBan/PCV_SVCU/blob/main/PCV_UserManual/User_Manual_PDF/UserManual_Agisoft_Metashape_2024_08.pdf)
 - [Agisoft Metashape Python API Reference](https://www.agisoft.com/pdf/metashape_python_api_2_3_2.pdf)
 - [Official Agisoft Metashape scripts](https://github.com/agisoft-llc/metashape-scripts)
