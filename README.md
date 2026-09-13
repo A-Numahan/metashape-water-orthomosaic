@@ -17,25 +17,7 @@ Metashape Professional. The repository covers two processing scenarios:
 
 ## Workflow
 
-```mermaid
-flowchart TB
-    A[Import images and PPK positions] --> B[Set camera accuracy H/V]
-    B --> C{Are shorelines or stable<br/>objects visible?}
-
-    C -->|Yes| D[Run standard Align Photos]
-    D --> E[Run force_camera_position.py<br/>for remaining cameras]
-    E --> F[Resize the region]
-    F --> G[Build depth maps / point cloud]
-    G --> H[Build DEM]
-    H --> I[Build orthomosaic]
-
-    C -->|Water only| J[Run align_water_sequential_flightlines.py<br/>sequence-based flight-line matching]
-    J --> K[Run force_camera_position.py<br/>for remaining cameras]
-    K --> L[Resize the region]
-    L --> M[Create an external DEM<br/>from a reliable water-surface elevation]
-    M --> N[Import DEM]
-    N --> O[Build orthomosaic]
-```
+![Metashape water-orthomosaic workflow for shoreline and water-only scenarios](docs/images/workflow.png)
 
 ## Example results
 
