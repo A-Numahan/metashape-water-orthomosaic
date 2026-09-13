@@ -1,45 +1,47 @@
 # Metashape scripts
 
-สคริปต์ในโฟลเดอร์นี้ต้องรันจาก Agisoft Metashape Professional ผ่าน
-`Tools > Run Script` หรือ Python Console ไม่ใช่ Python ทั่วไป
+Run these scripts from Agisoft Metashape Professional through `Tools > Run Script`
+or the Python Console. They are not intended for a standard external Python runtime.
 
 ## `align_water_sequential_flightlines.py`
 
-ใช้กับกรณีพื้นที่มีแต่น้ำหรือ texture ต่ำมาก โดยทำงานดังนี้:
+Use this script when the scene contains only water or has extremely low texture. It:
 
-1. เลือกกล้องที่เปิดใช้งาน มีไฟล์ภาพ และมี reference location
-2. ใช้ระยะห่างระหว่างกล้องที่อยู่ติดกันในลำดับของ chunk เพื่อหา spacing ปกติ
-3. แบ่งแนวบินเมื่อระยะระหว่างกล้องต่อเนื่องมากกว่าค่ามัธยฐาน 2.5 เท่า
-4. สร้างคู่ภาพกับภาพถัดไปไม่เกิน `NEIGHBOR` ภาพภายในแนวเดียวกัน
-5. Match Photos แล้ว Align Cameras ทีละแนวบิน
+1. Selects enabled cameras that have an image and a reference location.
+2. Measures spacing between adjacent cameras in the chunk sequence.
+3. Starts a new flight line when the sequential distance exceeds 2.5 times the median.
+4. Pairs each camera with up to `NEIGHBOR` following cameras in the same flight line.
+5. Matches photos and aligns cameras one flight line at a time.
 
 > [!CAUTION]
-> สคริปต์ตั้ง `camera.transform = None` ให้กล้องทุกตัวก่อนเริ่ม จึงล้าง alignment
-> เดิมทั้งหมด ควรบันทึกสำเนา `.psx` ก่อนรัน และอย่ารันใน chunk ที่ต้องการรักษา
-> alignment เดิม
+> The script sets `camera.transform = None` for every camera before matching. This
+> removes all previous camera alignment. Save a copy of the `.psx` project first and
+> do not run the script in a chunk whose existing alignment must be preserved.
 
 > [!IMPORTANT]
-> วิธีนี้ถือว่าลำดับ `chunk.cameras` เป็นลำดับการถ่ายจริง และช่วงเปลี่ยนแนวบินมี
-> ระยะกระโดดชัดเจน หากภาพถูกเรียงตามชื่อ/แบนด์ในรูปแบบอื่นหรือแต่ละสถานีมีกล้อง
-> หลายแบนด์ที่พิกัดเกือบซ้ำกัน ต้องตรวจรายงาน flight lines ก่อนเชื่อถือผล
+> The method assumes `chunk.cameras` follows the actual capture sequence and that
+> transitions between flight lines produce a clear distance jump. If images are
+> ordered by band or name, or if multiple bands at one camera station have nearly
+> identical positions, inspect the reported flight lines before trusting the result.
 
-ค่าที่มักปรับ:
+Common settings:
 
-- `NEIGHBOR` — จำนวนภาพถัดไปในแนวบินที่นำมาจับคู่
+- `NEIGHBOR` — number of following cameras paired within the same flight line
 - `DOWNSCALE` — `0` = Highest, `1` = High, `2` = Medium
-- `KEYPOINT_LIMIT` — จำนวน key points สูงสุด
-- `LINE_BREAK_DISTANCE` — สคริปต์คำนวณจาก median spacing × 2.5
+- `KEYPOINT_LIMIT` — maximum number of key points
+- `LINE_BREAK_DISTANCE` — calculated as median sequential spacing × 2.5
 
 ## `force_camera_position.py`
 
-สร้าง `camera.transform` ให้กล้อง Regular ที่ยังไม่ align โดยใช้ตำแหน่งและมุม
-Yaw/Pitch/Roll ใน Reference pane กล้องที่ align แล้วหรือไม่มี reference data จะถูกข้าม
+Creates `camera.transform` for unaligned regular cameras using the position and
+Yaw/Pitch/Roll values in the Reference pane. Cameras that are already aligned or lack
+reference information are skipped.
 
-ข้อสมมติที่ต้องตรวจ:
+Verify these assumptions before running it:
 
-- `chunk.euler_angles` เป็น `Yaw/Pitch/Roll`
-- มีทั้ง `camera.reference.location` และ `camera.reference.rotation`
-- ไม่มี antenna offset ที่ต้องนำมาคำนวณเพิ่ม
-- CRS และ vertical datum ถูกต้อง
+- `chunk.euler_angles` is `Yaw/Pitch/Roll`.
+- Both `camera.reference.location` and `camera.reference.rotation` are available.
+- No unaccounted antenna or lever-arm offset is configured.
+- The horizontal CRS and vertical datum are correct.
 
-เริ่มทดสอบกับกล้อง 1–2 ตัวโดยกำหนด `TARGET_LABELS` ก่อนใช้กับทุกภาพ
+Set `TARGET_LABELS` and test one or two cameras before processing the full dataset.

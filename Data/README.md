@@ -1,15 +1,17 @@
 # Reference data
 
-โฟลเดอร์ทำงานในเครื่องนี้มีชุดข้อมูล 2 พื้นที่:
+The local workspace contains two survey datasets:
 
-| ชุดข้อมูล | จำนวนรายการ | จำนวนจุดถ่าย | แบนด์ต่อจุด | CRS ใน GeoPackage |
+| Dataset | Records | Camera stations | Bands per station | GeoPackage CRS |
 |---|---:|---:|---:|---|
 | `K_AreaC/Area_C` | 1,450 | 290 | 5 | EPSG:4326 |
 | `T_AreaE/Area_E` | 2,495 | 499 | 5 | EPSG:4326 |
 
-แต่ละจุดประกอบด้วย `RGB`, `Green`, `Red`, `RedEdge` และ `NIR` ไฟล์ CSV และ
-GeoPackage มีฟิลด์ `image_name`, `camera_band`, `Longitude`, `Latitude`, `Elevation`
+Each station contains `RGB`, `Green`, `Red`, `RedEdge`, and `NIR` records. The CSV and
+GeoPackage files contain `image_name`, `camera_band`, `Longitude`, `Latitude`, and
+`Elevation` fields.
 
-ไฟล์ `.csv` และ `.gpkg` จริงถูก `.gitignore` ไว้โดยตั้งใจ เพราะมีชื่อภาพและพิกัด
-พื้นที่สำรวจ ก่อนเผยแพร่ตัวอย่างควรยืนยันสิทธิ์และทำข้อมูลนิรนาม หากต้องการเก็บไฟล์
-ขนาดใหญ่บน GitHub ให้พิจารณา Git LFS หรือแนบเฉพาะตัวอย่างสังเคราะห์ขนาดเล็ก
+Real `.csv` and `.gpkg` files are intentionally excluded by `.gitignore` because they
+contain survey coordinates and image identifiers. Confirm publication rights and
+anonymize sensitive information before sharing a sample. Use Git LFS for approved
+large files, or publish a small synthetic example instead.

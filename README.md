@@ -1,101 +1,108 @@
 # Metashape Water Orthomosaic
 
-แนวทางประมวลผลภาพถ่ายโดรนเพื่อสร้าง orthomosaic ในพื้นที่น้ำด้วย
-Agisoft Metashape Professional โดยรองรับ 2 กรณีหลัก:
+A practical workflow for producing drone orthomosaics over water in Agisoft
+Metashape Professional. The repository covers two processing scenarios:
 
-1. **มีชายฝั่งหรือวัตถุที่มองเห็นได้** — ใช้การ Align Photos ตามปกติ แล้วใช้
-   ตำแหน่ง PPK/RTK ช่วยเฉพาะภาพที่ไม่สามารถ align ได้
-2. **มีแต่น้ำหรือมี texture ต่ำมาก** — จับคู่ภาพตามลำดับการถ่ายและแนวบินก่อน
-   แล้วใช้ตำแหน่ง PPK/RTK และ DEM ภายนอกช่วยสร้าง orthomosaic ให้ครอบคลุมพื้นที่
+1. **A shoreline or visible objects are present** — use standard photo alignment,
+   then use PPK/RTK positions only for cameras that could not be aligned.
+2. **The area contains only water or extremely low texture** — match cameras by
+   capture sequence and flight line, then use PPK/RTK positions and an external
+   DEM to produce complete orthomosaic coverage.
 
 > [!IMPORTANT]
-> ถ้าความแม่นยำ PPK คือแนวราบ **2 cm** และแนวดิ่ง **5 cm** ให้ป้อนใน
-> Metashape เป็น `0.02 m` และ `0.05 m` ตามลำดับ ภาพ workflow เดิมที่เขียน
-> `0.02/0.05 cm` น่าจะระบุหน่วยคลาดเคลื่อน จึงควรตรวจสอบรายงาน PPK ก่อนใช้จริง
+> If the PPK accuracy is **2 cm horizontally** and **5 cm vertically**, enter
+> `0.02 m` and `0.05 m` in Metashape. The original workflow diagram labels these
+> values as `0.02/0.05 cm`, which is likely a unit error. Confirm the units in the
+> PPK processing report before use.
 
 ## Workflow
 
 ```mermaid
 flowchart TB
-    A[นำเข้าภาพและตำแหน่ง PPK] --> B[ตั้ง Camera Accuracy H/V]
-    B --> C{ภาพมีชายฝั่งหรือวัตถุ<br/>ให้จับคู่หรือไม่?}
+    A[Import images and PPK positions] --> B[Set camera accuracy H/V]
+    B --> C{Are shorelines or stable<br/>objects visible?}
 
-    C -->|มี| D[Align Photos ตามปกติ]
-    D --> E[รัน force_camera_position.py<br/>เฉพาะกล้องที่ยังไม่ align]
-    E --> F[ปรับ Region]
-    F --> G[สร้าง Depth Maps / Point Cloud]
+    C -->|Yes| D[Run standard Align Photos]
+    D --> E[Run force_camera_position.py<br/>for remaining cameras]
+    E --> F[Resize the region]
+    F --> G[Build depth maps / point cloud]
     G --> H[Build DEM]
-    H --> I[Build Orthomosaic]
+    H --> I[Build orthomosaic]
 
-    C -->|มีแต่น้ำ| J[รัน align_water_sequential_flightlines.py<br/>จับคู่ตามลำดับและแนวบิน]
-    J --> K[รัน force_camera_position.py<br/>กับกล้องที่เหลือ]
-    K --> L[ปรับ Region]
-    L --> M[สร้าง DEM ภายนอก<br/>จากระดับผิวน้ำที่เชื่อถือได้]
+    C -->|Water only| J[Run align_water_sequential_flightlines.py<br/>sequence-based flight-line matching]
+    J --> K[Run force_camera_position.py<br/>for remaining cameras]
+    K --> L[Resize the region]
+    L --> M[Create an external DEM<br/>from a reliable water-surface elevation]
     M --> N[Import DEM]
-    N --> O[Build Orthomosaic]
+    N --> O[Build orthomosaic]
 ```
 
-รายละเอียดทีละขั้นอยู่ใน [คู่มือการประมวลผล](docs/WORKFLOW_TH.md)
-และรูปแบบข้อมูล PPK อยู่ใน [คู่มือข้อมูลอ้างอิง](docs/REFERENCE_DATA_TH.md)
+See the [processing workflow](docs/WORKFLOW.md),
+[reference-data guide](docs/REFERENCE_DATA.md), and
+[troubleshooting guide](docs/TROUBLESHOOTING.md) for detailed instructions.
 
-## โครงสร้าง repository
+## Repository structure
 
 ```text
 .
 ├── Py/
 │   ├── align_water_sequential_flightlines.py
-│   │                             # จับคู่/align ตามลำดับในแต่ละแนวบิน
-│   ├── force_camera_position.py  # กำหนด transform จากตำแหน่งและมุมอ้างอิง
+│   │                             # Match and align sequential cameras by flight line
+│   ├── force_camera_position.py  # Set transforms from reference position/orientation
 │   └── README.md
 ├── Data/
-│   └── README.md                 # อธิบายข้อมูลตัวอย่าง (ข้อมูลจริงไม่ถูก commit)
+│   └── README.md                 # Data description; real survey data is not committed
 ├── docs/
-│   ├── WORKFLOW_TH.md
-│   ├── REFERENCE_DATA_TH.md
-│   └── TROUBLESHOOTING_TH.md
+│   ├── WORKFLOW.md
+│   ├── REFERENCE_DATA.md
+│   └── TROUBLESHOOTING.md
 ├── tools/
 │   └── validate_reference_csv.py
 └── .github/workflows/python-syntax.yml
 ```
 
-## เริ่มใช้งาน
+## Quick start
 
-1. เปิดโครงการใน Agisoft Metashape Professional 2.x และเพิ่มภาพถ่าย
-2. นำเข้าไฟล์ PPK ใน Reference pane โดยให้ชื่อภาพตรงกับ camera label
-3. ตรวจ CRS, vertical datum, camera accuracy และชนิดมุม Yaw/Pitch/Roll
-4. เลือก workflow ให้ตรงกับลักษณะพื้นที่
-5. รันสคริปต์ผ่าน `Tools > Run Script` หรือ Python Console ของ Metashape
-6. บันทึกสำเนาโครงการก่อนรันสคริปต์ โดยเฉพาะ
-   `Py/align_water_sequential_flightlines.py`
-7. ตรวจ alignment, camera error, DEM และ seamline ก่อน export GeoTIFF
+1. Open a project in Agisoft Metashape Professional 2.x and add the photographs.
+2. Import the PPK file in the Reference pane. Image names must match camera labels.
+3. Verify the CRS, vertical datum, camera accuracy, and angle convention.
+4. Select the workflow that matches the scene.
+5. Run scripts through `Tools > Run Script` or the Metashape Python Console.
+6. Save a project copy before running a script, especially
+   `Py/align_water_sequential_flightlines.py`.
+7. Inspect alignment, camera errors, the DEM, and seamlines before exporting GeoTIFF.
 
-สคริปต์ต้องรันภายใน Python ของ Metashape เพราะต้องใช้โมดูล `Metashape` และ
-เอกสารต้องมี active chunk
+The scripts must run in Metashape's Python environment because they require the
+`Metashape` module and an open document with an active chunk.
 
-## ตรวจไฟล์ PPK ก่อนนำเข้า
+## Validate PPK reference files
 
-ใช้ Python ปกตินอก Metashape ได้:
+The CSV validator runs in a standard Python installation outside Metashape:
 
 ```powershell
 python tools/validate_reference_csv.py Data/K_AreaC/Area_C.csv Data/T_AreaE/Area_E.csv
 ```
 
-ตัวตรวจจะรายงานจำนวนแถว แบนด์ ช่วงพิกัด ค่าที่อ่านไม่ได้ ชื่อภาพซ้ำ และค่าพิกัด
-ที่ผิดช่วงเบื้องต้น แต่ไม่สามารถยืนยัน datum หรือความถูกต้องเชิงสำรวจแทนผู้ใช้ได้
+It reports row and band counts, coordinate ranges, malformed values, duplicate image
+names, and basic coordinate-range errors. It cannot validate the survey datum or
+replace an independent accuracy assessment.
 
-## ข้อจำกัด
+## Limitations
 
-- ผิวน้ำเปลี่ยนรูปร่าง สะท้อนแสง และมีคลื่น จึงมักสร้าง tie points ที่ไม่เสถียร
-- `force_camera_position.py` เป็น fallback จาก GPS/INS ไม่ใช่ผล bundle adjustment
-- DEM ภายนอกต้องครอบคลุมพื้นที่ orthomosaic และใช้ CRS/vertical datum ที่สอดคล้องกัน
-- ห้ามใช้ค่าความสูงของกล้องใน CSV เป็นระดับผิวน้ำ
-- ควรมี check points หรือข้อมูลสำรวจอิสระสำหรับประเมินความถูกต้อง
+- Water changes shape, reflects light, and moves between exposures, so tie points may
+  be unstable.
+- `force_camera_position.py` is a GPS/INS fallback, not a bundle-adjusted solution.
+- An external DEM must cover the orthomosaic extent and use compatible horizontal and
+  vertical reference systems.
+- Never use the camera elevation from the reference CSV as the water-surface elevation.
+- Independent checkpoints or survey observations are recommended for accuracy testing.
 
-คู่มือนี้อ้างอิง workflow ของ Agisoft Metashape Professional 2.x และตรวจชื่อ API
-กับเอกสารรุ่น 2.3.2 แต่ยังต้องทดสอบกับข้อมูลและรุ่น Metashape ที่ใช้งานจริง
+The workflow targets Agisoft Metashape Professional 2.x. API names were reviewed
+against the 2.3.2 documentation, but processing must still be tested with the actual
+dataset and installed Metashape version.
 
-## เอกสารอ้างอิง
+## References
 
 - [Agisoft Metashape Professional User Manual](https://www.agisoft.com/pdf/metashape-pro_2_3_en.pdf)
 - [Agisoft Metashape Python API Reference](https://www.agisoft.com/pdf/metashape_python_api_2_3_2.pdf)
-- [Agisoft official Metashape scripts](https://github.com/agisoft-llc/metashape-scripts)
+- [Official Agisoft Metashape scripts](https://github.com/agisoft-llc/metashape-scripts)
