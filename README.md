@@ -9,12 +9,6 @@ Metashape Professional. The repository covers two processing scenarios:
    capture sequence and flight line, then use PPK/RTK positions and an external
    DEM to produce complete orthomosaic coverage.
 
-> [!IMPORTANT]
-> If the PPK accuracy is **2 cm horizontally** and **5 cm vertically**, enter
-> `0.02 m` and `0.05 m` in Metashape. The original workflow diagram labels these
-> values as `0.02/0.05 cm`, which is likely a unit error. Confirm the units in the
-> PPK processing report before use.
-
 ## Workflow
 
 ![Metashape water-orthomosaic workflow for shoreline and water-only scenarios](docs/images/workflow.png)
