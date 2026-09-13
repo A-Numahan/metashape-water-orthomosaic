@@ -37,6 +37,34 @@ flowchart TB
     N --> O[Build orthomosaic]
 ```
 
+## Example results
+
+### Scenario 1 — Shoreline and stable features available
+
+The Area C example shows the orthomosaic before and after recovering coverage over the
+low-texture water area. The red line marks the survey or processing boundary.
+
+| Before | After |
+|---|---|
+| ![Area C orthomosaic before processing, with gaps over water](docs/images/area-c-before.png) | ![Area C orthomosaic after processing, with complete water coverage](docs/images/area-c-after.png) |
+
+### Scenario 2 — Water-only area
+
+The Area E example uses camera positions and an external elevation surface to support
+orthomosaic generation where stable image texture is limited.
+
+**DEM and camera positions**
+
+![Area E DEM with camera positions and processing boundary](docs/images/area-e-dem-with-camera-positions.png)
+
+**Orthomosaic and camera positions**
+
+![Area E orthomosaic with camera positions and processing boundary](docs/images/area-e-orthomosaic-with-camera-positions.png)
+
+**Final orthomosaic**
+
+![Area E final water-area orthomosaic](docs/images/area-e-orthomosaic.png)
+
 See the [processing workflow](docs/WORKFLOW.md),
 [reference-data guide](docs/REFERENCE_DATA.md), and
 [troubleshooting guide](docs/TROUBLESHOOTING.md) for detailed instructions.
@@ -55,7 +83,8 @@ See the [processing workflow](docs/WORKFLOW.md),
 ├── docs/
 │   ├── WORKFLOW.md
 │   ├── REFERENCE_DATA.md
-│   └── TROUBLESHOOTING.md
+│   ├── TROUBLESHOOTING.md
+│   └── images/                    # Example processing results
 ├── tools/
 │   └── validate_reference_csv.py
 └── .github/workflows/python-syntax.yml

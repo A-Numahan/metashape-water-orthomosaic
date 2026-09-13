@@ -15,6 +15,10 @@ raw/
 outputs/
 work/
 temp/
+*.tif
+*.tiff
+*.tfw
+*.prj
 
 # Real survey coordinates are excluded by default.
 # Remove these rules only after checking privacy and publication permission.
