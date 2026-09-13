@@ -5,7 +5,7 @@ Agisoft Metashape Professional โดยรองรับ 2 กรณีหล�
 
 1. **มีชายฝั่งหรือวัตถุที่มองเห็นได้** — ใช้การ Align Photos ตามปกติ แล้วใช้
    ตำแหน่ง PPK/RTK ช่วยเฉพาะภาพที่ไม่สามารถ align ได้
-2. **มีแต่น้ำหรือมี texture ต่ำมาก** — จับคู่ภาพ Green band ตามแนวบินก่อน
+2. **มีแต่น้ำหรือมี texture ต่ำมาก** — จับคู่ภาพตามลำดับการถ่ายและแนวบินก่อน
    แล้วใช้ตำแหน่ง PPK/RTK และ DEM ภายนอกช่วยสร้าง orthomosaic ให้ครอบคลุมพื้นที่
 
 > [!IMPORTANT]
@@ -27,7 +27,7 @@ flowchart TB
     G --> H[Build DEM]
     H --> I[Build Orthomosaic]
 
-    C -->|มีแต่น้ำ| J[รัน 05.py<br/>Green-band strip alignment]
+    C -->|มีแต่น้ำ| J[รัน align_water_sequential_flightlines.py<br/>จับคู่ตามลำดับและแนวบิน]
     J --> K[รัน force_camera_position.py<br/>กับกล้องที่เหลือ]
     K --> L[ปรับ Region]
     L --> M[สร้าง DEM ภายนอก<br/>จากระดับผิวน้ำที่เชื่อถือได้]
@@ -43,7 +43,8 @@ flowchart TB
 ```text
 .
 ├── Py/
-│   ├── 05.py                     # จับคู่/align Green band ตามแนวบิน
+│   ├── align_water_sequential_flightlines.py
+│   │                             # จับคู่/align ตามลำดับในแต่ละแนวบิน
 │   ├── force_camera_position.py  # กำหนด transform จากตำแหน่งและมุมอ้างอิง
 │   └── README.md
 ├── Data/
@@ -64,7 +65,8 @@ flowchart TB
 3. ตรวจ CRS, vertical datum, camera accuracy และชนิดมุม Yaw/Pitch/Roll
 4. เลือก workflow ให้ตรงกับลักษณะพื้นที่
 5. รันสคริปต์ผ่าน `Tools > Run Script` หรือ Python Console ของ Metashape
-6. บันทึกสำเนาโครงการก่อนรันสคริปต์ โดยเฉพาะ `Py/05.py`
+6. บันทึกสำเนาโครงการก่อนรันสคริปต์ โดยเฉพาะ
+   `Py/align_water_sequential_flightlines.py`
 7. ตรวจ alignment, camera error, DEM และ seamline ก่อน export GeoTIFF
 
 สคริปต์ต้องรันภายใน Python ของ Metashape เพราะต้องใช้โมดูล `Metashape` และ

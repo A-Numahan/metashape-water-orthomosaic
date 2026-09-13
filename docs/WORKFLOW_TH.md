@@ -41,25 +41,28 @@
 
 เหมาะเมื่อ standard alignment ไม่สามารถสร้างเครือข่าย tie points ที่เสถียรได้
 
-1. ตรวจว่าภาพ Green band มี RTK location และชื่อมี `Green`, `_MS_G` หรือ `MS_G.`
-2. บันทึกสำเนา project เพราะ `Py/05.py` ล้าง alignment เดิมทั้งหมด
-3. รัน `Py/05.py`
-   - สคริปต์ประมาณทิศบินและแบ่งแนวบินจากตำแหน่ง RTK
+1. ตรวจว่ากล้องที่ต้องใช้เปิดใช้งาน มีไฟล์ภาพ และมี RTK/PPK reference location
+2. ตรวจลำดับกล้องใน chunk ให้สอดคล้องกับลำดับการถ่ายจริง
+3. บันทึกสำเนา project เพราะ `Py/align_water_sequential_flightlines.py`
+   ล้าง alignment เดิมทั้งหมด
+4. รัน `Py/align_water_sequential_flightlines.py`
+   - สคริปต์คำนวณระยะห่างของกล้องที่อยู่ติดกันในลำดับของ chunk
+   - แบ่งแนวบินเมื่อระยะกระโดดมากกว่าระยะปกติ 2.5 เท่า
    - จับคู่เฉพาะภาพข้างเคียงในแนวเดียวกัน
-   - align Green band ทีละแนวและรายงานจำนวน tracks/aligned cameras
-4. ตรวจว่า flight lines ที่รายงานตรงกับแผนบินจริง หากไม่ตรงให้หยุดและปรับค่า
+   - align ทีละแนวและรายงานจำนวน tracks/aligned cameras
+5. ตรวจว่า flight lines ที่รายงานตรงกับแผนบินจริง หากไม่ตรงให้หยุดและปรับค่า
    clustering ก่อนดำเนินการต่อ
-5. รัน `Py/force_camera_position.py` สำหรับกล้องที่ยังไม่มี transform
-6. ปรับ Region ให้ครอบคลุมทุก footprint ที่ต้องการ รวมขอบเผื่อเล็กน้อย
-7. สร้าง DEM ภายนอก
+6. รัน `Py/force_camera_position.py` สำหรับกล้องที่ยังไม่มี transform
+7. ปรับ Region ให้ครอบคลุมทุก footprint ที่ต้องการ รวมขอบเผื่อเล็กน้อย
+8. สร้าง DEM ภายนอก
    - ใช้ระดับผิวน้ำจากงานสำรวจ เกจวัดระดับ แบบจำลองภูมิประเทศ หรือข้อมูลอื่นที่
      อ้างอิง datum ชัดเจน
    - ถ้าสมมติผิวน้ำราบ ให้สร้าง raster ระดับคงที่ใน projected CRS
    - ห้ามใช้ระดับความสูงกล้องจาก CSV เป็นค่าระดับน้ำ
    - raster ต้องครอบคลุม Region ทั้งหมดและมี NoData/ความละเอียดที่เหมาะสม
-8. นำ DEM เข้า Metashape ผ่านคำสั่ง Import DEM และตรวจตำแหน่ง/ระดับใน Ortho view
-9. Build Orthomosaic โดยเลือก DEM ที่นำเข้าเป็น surface
-10. ตรวจ coverage และ positional consistency กับแนวชายฝั่ง จุดควบคุม หรือข้อมูล GIS
+9. นำ DEM เข้า Metashape ผ่านคำสั่ง Import DEM และตรวจตำแหน่ง/ระดับใน Ortho view
+10. Build Orthomosaic โดยเลือก DEM ที่นำเข้าเป็น surface
+11. ตรวจ coverage และ positional consistency กับแนวชายฝั่ง จุดควบคุม หรือข้อมูล GIS
 
 ## 4. Quality control ก่อนส่งมอบ
 

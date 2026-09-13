@@ -3,27 +3,32 @@
 สคริปต์ในโฟลเดอร์นี้ต้องรันจาก Agisoft Metashape Professional ผ่าน
 `Tools > Run Script` หรือ Python Console ไม่ใช่ Python ทั่วไป
 
-## `05.py`
+## `align_water_sequential_flightlines.py`
 
 ใช้กับกรณีพื้นที่มีแต่น้ำหรือ texture ต่ำมาก โดยทำงานดังนี้:
 
-1. หาเฉพาะกล้อง Green band จากชื่อ sensor/camera/file
-2. ใช้ตำแหน่ง RTK แบ่งภาพเป็นแนวบินด้วย PCA
-3. สร้างคู่ภาพกับภาพข้างเคียงในแนวเดียวกัน
-4. Match Photos และ Align Cameras ทีละแนวบิน
-5. ลอง align ภาพ Green ที่ยังเหลืออีกครั้ง
+1. เลือกกล้องที่เปิดใช้งาน มีไฟล์ภาพ และมี reference location
+2. ใช้ระยะห่างระหว่างกล้องที่อยู่ติดกันในลำดับของ chunk เพื่อหา spacing ปกติ
+3. แบ่งแนวบินเมื่อระยะระหว่างกล้องต่อเนื่องมากกว่าค่ามัธยฐาน 2.5 เท่า
+4. สร้างคู่ภาพกับภาพถัดไปไม่เกิน `NEIGHBOR` ภาพภายในแนวเดียวกัน
+5. Match Photos แล้ว Align Cameras ทีละแนวบิน
 
 > [!CAUTION]
 > สคริปต์ตั้ง `camera.transform = None` ให้กล้องทุกตัวก่อนเริ่ม จึงล้าง alignment
 > เดิมทั้งหมด ควรบันทึกสำเนา `.psx` ก่อนรัน และอย่ารันใน chunk ที่ต้องการรักษา
 > alignment เดิม
 
+> [!IMPORTANT]
+> วิธีนี้ถือว่าลำดับ `chunk.cameras` เป็นลำดับการถ่ายจริง และช่วงเปลี่ยนแนวบินมี
+> ระยะกระโดดชัดเจน หากภาพถูกเรียงตามชื่อ/แบนด์ในรูปแบบอื่นหรือแต่ละสถานีมีกล้อง
+> หลายแบนด์ที่พิกัดเกือบซ้ำกัน ต้องตรวจรายงาน flight lines ก่อนเชื่อถือผล
+
 ค่าที่มักปรับ:
 
-- `NEIGHBOR_COUNT` — จำนวนภาพถัดไปในแนวบินที่นำมาจับคู่
-- `DOWNSCALE` — `1` = High, `2` = Medium
-- `STRIP_TOLERANCE_FACTOR` — tolerance ในการแยกแนวบิน
-- `MIN_CAMERAS_PER_STRIP` — จำนวนภาพขั้นต่ำต่อแนวบิน
+- `NEIGHBOR` — จำนวนภาพถัดไปในแนวบินที่นำมาจับคู่
+- `DOWNSCALE` — `0` = Highest, `1` = High, `2` = Medium
+- `KEYPOINT_LIMIT` — จำนวน key points สูงสุด
+- `LINE_BREAK_DISTANCE` — สคริปต์คำนวณจาก median spacing × 2.5
 
 ## `force_camera_position.py`
 

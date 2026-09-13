@@ -1,23 +1,19 @@
 # การแก้ปัญหา
 
-## `No Green cameras detected`
+## กล้องที่มี reference location น้อยกว่าที่คาด
 
-ตรวจชื่อ sensor, camera label และชื่อไฟล์ ต้องมีคำว่า `green`, `_MS_G` หรือ `MS_G.`
-ถ้ารูปแบบชื่อไม่ตรง ให้ปรับฟังก์ชัน `is_green_camera()` ใน `Py/05.py`
-
-## `Green with RTK` น้อยกว่าที่คาด
-
-ตรวจว่า import reference สำเร็จ ชื่อใน CSV ตรงกับ camera label และเลือก CRS ถูกต้อง
-กล้องต้องมี `camera.reference.location`
+ตรวจว่า import reference สำเร็จ ชื่อใน CSV ตรงกับ camera label เลือก CRS ถูกต้อง
+กล้องเปิดใช้งาน มีไฟล์ภาพ และมี `camera.reference.location`
 
 ## ตรวจไม่พบแนวบินหรือแบ่งแนวบินผิด
 
 - ตรวจพิกัดสลับ Longitude/Latitude
 - ตรวจ outliers ใน PPK
-- ปรับ `STRIP_TOLERANCE_FACTOR` ทีละน้อย
-- ปรับ `MIN_CAMERAS_PER_STRIP` ให้เหมาะกับจำนวนภาพจริง
-- PCA อาจเลือกแกนผิดเมื่อรูปทรงแผนบินกว้างกว่ายาวหรือมีหลายทิศบิน ควรแบ่ง chunk
-  ตามชุดแนวบินก่อนรัน
+- ตรวจว่าลำดับ `chunk.cameras` เป็นลำดับการถ่ายจริง
+- ตรวจว่าภาพหลายแบนด์จากสถานีเดียวกันซึ่งมีพิกัดเกือบซ้ำไม่ได้ทำให้ median spacing
+  เล็กเกินจริง
+- หากช่วงเลี้ยวกลับไม่มีระยะกระโดดชัดเจน ให้แบ่ง chunk ตามชุดแนวบินก่อนรัน
+- ปรับตัวคูณ `2.5` ของ `LINE_BREAK_DISTANCE` อย่างระมัดระวังและตรวจรายงานทุกครั้ง
 
 ## กล้องถูก force แล้วหันผิดทิศ
 
