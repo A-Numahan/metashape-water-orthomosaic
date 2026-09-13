@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Agisoft Metashape projects and working directories
+*.psx
+*.psz
+*.files/
+
+# Raw imagery and generated products should not be committed
+photos/
+raw/
+outputs/
+work/
+temp/
+
+# Real survey coordinates are excluded by default.
+# Remove these rules only after checking privacy and publication permission.
+Data/**/*.csv
+Data/**/*.gpkg
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
