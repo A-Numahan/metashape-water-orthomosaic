@@ -29,13 +29,9 @@ low-texture water area. The red line marks the survey or processing boundary.
 The Area E example uses camera positions and an external elevation surface to support
 orthomosaic generation where stable image texture is limited.
 
-**DEM and camera positions**
-
-![Area E DEM with camera positions and processing boundary](docs/images/area-e-dem-with-camera-positions.png)
-
-**Orthomosaic and camera positions**
-
-![Area E orthomosaic with camera positions and processing boundary](docs/images/area-e-orthomosaic-with-camera-positions.png)
+| DEM and camera positions | Orthomosaic and camera positions |
+|---|---|
+| ![Area E DEM with camera positions and processing boundary](docs/images/area-e-dem-with-camera-positions.png) | ![Area E orthomosaic with camera positions and processing boundary](docs/images/area-e-orthomosaic-with-camera-positions.png) |
 
 **Final orthomosaic**
 
